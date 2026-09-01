@@ -2,7 +2,7 @@
 
 Made by: Josh Grant
 Created on: 08/30/26
-Modified on: 08/30/26
+Modified on: 08/31/26
 
 Architecture x64
 OS: Windows 11 25H2
@@ -26,7 +26,26 @@ $global:Bprograms = @(
 $global:Sprograms = (Name = "Security Cert for Lumion" Path = "\\ucsarch\apps$\" Arguments = "")
 $global:Pprograms = (Name = "Prusa Software" Path = "\\ucsarch\apps$\Prusa\" Arguments = "")
 
+#$main = New-Object Main
 
+class Main{
+    #$chkdomstat = New-Object chkdomstat
+    function mainmethod{
+        $chkdomstat
+
+    }
+    function  chkdomstat{
+        [boolean]$domainstatus = (Get-WmiObject -Class Win32_ComputerSystem).PartOfDomain
+        if ($domainstatus -eq 'true') {call joindomain}
+        else {call installapps}
+    }
+    function joindomain{
+        Write-Host "You successfully went to the joindomain method"
+    }
+    function installapps{
+        write-Host "You successfully went to the installapps method"
+    }
+}
 
 # Does the intial check to see if computer is added to STUDENTI domain
 $chkdomstat = (Get-WmiObject -Class Win32_ComputerSystem).PartOfDomain
