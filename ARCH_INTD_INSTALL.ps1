@@ -131,22 +131,6 @@ class AppInstallation {
         $this.Logs($message)
     }
 
-    <#function mainmethod{
-        $chkdomstat
-
-    }
-    function  chkdomstat{
-        [boolean]$domainstatus = (Get-WmiObject -Class Win32_ComputerSystem).PartOfDomain
-        if ($domainstatus -eq 'true') {call joindomain}
-        else {call installapps}
-    }
-    function joindomain{
-        Write-Host "You successfully went to the joindomain method"
-    }
-    function installapps{
-        write-Host "You successfully went to the installapps method"
-    }#>
-}
 
 # Does the intial check to see if computer is added to STUDENTI domain
 $chkdomstat = (Get-WmiObject -Class Win32_ComputerSystem).PartOfDomain
