@@ -11,6 +11,19 @@ Model: Presicion T5820
 
 #>
 
+# --- Start self-elevation check ---
+$IsAdmin = ([Security.Principal.WindowsPrincipal] `
+    [Security.Principal.WindowsIdentity]::GetCurrent()
+).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+
+if (-not $IsAdmin) {
+    Start-Process powershell.exe `
+        -Verb RunAs `
+        -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`""
+    exit
+}
+# --- End self-elevation block ---
+
 $global:Nprograms = @(
     @{Name = "Ninite"; Path = "\\ucsarch\apps$\Ninite"; Arguments = ""},
     @{Name = "Nvidia App"; Path = "\\ucsarch\apps$\Nvidia"; Arguments = ""},
