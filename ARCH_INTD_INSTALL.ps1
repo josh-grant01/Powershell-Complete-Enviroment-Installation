@@ -25,28 +25,39 @@ if (-not $IsAdmin) {
 # --- End self-elevation block ---
 
 $global:Nprograms = @(
-    @{Name = "Ninite"; Path = "\\ucsarch\apps$\Ninite"; Arguments = ""},
-    @{Name = "Nvidia App"; Path = "\\ucsarch\apps$\Nvidia"; Arguments = ""},
-    @{Name = "Nvidia Driver"; Path = "\\ucsarch\apps$\Nvidia"; Arguments = ""}
+    @{Name = "Ninite"; Loc = "\\ucsarch\apps`$\NINITE\Labs042026\Ninite 7Zip ASPNET Core Runtime 10 Installer.exe"; Para = "/s"; RequiresRestart = $false},
+    @{Name = "Nvidia App"; Loc = "\\ucsarch\apps`$\Drivers\NVIDIA_app_v11.0.6.383.exe"; Para = "/s"; RequiresRestart = $true},
+    @{Name = "Nvidia Driver"; Loc = "\\ucsarch\apps`$\Drivers\Nvidia_Stable_570_Channel\573.96-quadro-rtx-desktop-notebook-win10-win11-64bit-international-dch-whql.exe"; Para = "/s"; RequiresRestart = $true}
 )
 $global:Bprograms = @(
-    @{$AppName = "Adobe CC"; $InstallerPath = "\\artcomm\oit$\Installers\Adobe\cc26\"; $InstallerArgs = ""},
-    @{Name = "Autodesk"; Path = "\\ucsarch\apps$\Autodesk\2027\"; Arguments = ""},
-    @{Name = "SketchUp 2026"; Path = "\\ucsarch\apps$\SketchUp\"; Arguments = ""},
-    @{Name = "Lumion Student 2026"; Path = "\\ucsarch\apps$\Lumion\"; Arguments = ""},
-    @{Name = "Lumion Plugin for Revit 2027"; Path = "\\ucsarch\apps$\Lumion\"; Arguments = ""}
+    #Adobe CC 2026 Full Package
+    @{$AppName = "Adobe"; $InstallerPath = "\\artcomm\oit`$\Installers\Adobe\cc26\20260205-CC2026-SDL\Install2.cmd"; $InstallerArgs = "/c"},
+    
+    #Autodesk 2027 Full Package
+    @{$AppName = "Autodesk"; $InstallerPath = "\\ucsarch\apps$\Autodesk\2027\"; $InstallerArgs = ""},
+    
+    #SketchUp Full 2026
+    @{$AppName = "SketchUp 2026"; $InstallerPath = "\\ucsrch\apps`$\Sketchup\*SketchUp*"; $InstallerArgs = "/silent,/FEATURES=fr,de,es,it,ja,scan_essentials,revit_importer"}
+    
+    #Lumion Student 2026
+    @{$AppName = "Lumion Student 2026"; $InstallerPath = "\\ucsarch\apps`$\Lumion\Lumion_2025_0_2_Student_Download.exe"; $InstallerArgs = "--silent --silentautoexit"},
+    
+    #Lumion Plugin for Revit 2027
+    @{$AppName = "Lumion Plugin for Revit 2027"; $InstallerPath = "\\ucsarch\apps`$\Lumion\Revit_LiveSync_Plugin_Installation.bat"; $InstallerArgs = ""}
 )
-$global:Sprograms = (Name = "Security Cert for Lumion" Path = "\\ucsarch\apps$\" Arguments = "")
-$global:Pprograms = (Name = "Prusa Software" Path = "\\ucsarch\apps$\Prusa\" Arguments = "")
-$global:Example = @(
-    @{$AppName = "SketchUp 2026"; $InstallerPath = "%userprofile%\Downloads"; $InstallerArgs = ""}
-)
+#$global:Sprograms = ($AppName = "Security Cert for Lumion" $InstallerPath = "\\ucsarch\apps$\" $InstallerArgs = "")
+$global:Pprograms = ($AppName = "Prusa Software" $InstallerPath = "\\ucsarch\apps$\Prusa\" $InstallerArgs = "")
+<#$global:Example = @(
+    @{$AppName = "SketchUp 2026"; $InstallerPath = "\\ucsrch\apps`$\Sketchup\*SketchUp*"; $InstallerArgs = "/silent,/FEATURES=fr,de,es,it,ja,scan_essentials,revit_importer"}
+)#>
 
 class AppInstallation {
 
     [string]$AppName
-    [string]$InstalllerPath
+    [string]$InstallerPath
     [string]$InstallerArgs
+    [bool]$RequiresRestart = $false
+    [bool]$WasFreshInstall = $false
 
     # Constructor
     AppInstallation($AppName,$InstallerPath,$InstallerArgs) {
@@ -56,7 +67,7 @@ class AppInstallation {
     }
 
     # Checker
-    Checker() {
+    [void]Checker() {
         $this.Logs("App Checker started for $($this.AppName)")
         $prog64checker = [bool](Get-ChildItem -Path $env:ProgramFiles -Filter "*$($this.AppName)*" -Recurse -Directory -ErrorAction SilentlyContinue)
         $prog86checker = [bool](Get-ChildItem -Path $env:ProgramFiles(x86) -Filter "*$($this.AppName)*" -Recurse -Directory -ErrorAction SilentlyContinue)
@@ -140,14 +151,73 @@ class AppInstallation {
             'InstallFailed' {"$($this.AppName) installation failed."}
             default {"$($this.AppName): unrecognized status '$status'."}
         }
+        if ($status -eq 'InstallSuccess') {
+            $this.WasFreshInstall = $true
+        }
         Write-Host $message
         $this.Logs($message)
     }
+}
+
+<#
+    .DOCUMENTATION AppInstallQueue relies on prior declaration of AppInstallation class.
+#>
+class AppInstallQueue {
+    [System.Collections.Generic.List[AppInstallation]]$Apps
+    [string]$ScriptPath
+
+    # 300 = 5 minutes.
+    [int]$RestartDelaySeconds = 20
+    
+    AppInstallQueue([arrary]$appDefinitions, [string]$ScriptPath) {
+        $this.ScriptPath = $ScriptPath
+        $this.Apps = [System.Collecctions.Generic.List[AppInstallation]]::new()
+
+        foreach ($def in $appDefinitions) {
+            $app = [AppInstallaiton]::new($def.Name, $def.Loc, $def.Para)
+            if ($def.ContainsKey('RequiresRestart')) {
+                $app.RequiresRestart = [bool]$def.RequiresRestart
+            }
+            $this.Apps.Add($app)
+        }
+    }
+
+    [void]Run() {
+        foreach ($app in $this.Apps) {
+            Write-Host "=== Processing $($app.AppName) ==="
+            try {
+                $app.Checker()
+            }
+            catch {
+                Write-Host "Queue stopped - $($app.AppName) failed: $($_.Execption.Message)"
+                throw
+            }
+            if ($app.RequiresRestart -and $app.WasFreshInstall) {
+                Write-Host "$($app.AppName) requires a restart before the installation queue can continue."
+                $this.ScheduleRestartAndResume()
+                return
+            }
+        }
+        Write-Host "All apps in the queue completed successfully."
+    }
+
+    [void]ScheduleRestartAndResume() {
+        New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce" `
+            -Name "ResumeAppInstallQueue" -Value "powershell.exe -ExecutionPolicy Bypass -File `"$($this.ScriptPath)`"" `
+            -PropertyType String -Force | Out-Null
+        Write-Host "Restart required - restarting in $($this.RestartDelaySeconds) seconds..."
+        shutdown.exe /r /t $this.RestartDelaySeconds /c "Installation requires a restart to continue.  Your computer will restart automatically."
+    }
+
+}
+
+$queueOne = [AppInstallQueue]::new($Nprograms)
+$queueTwo = [AppInstallQueue]::new($Bprograms)
 
 
 # Does the intial check to see if computer is added to STUDENTI domain
-$chkdomstat = (Get-WmiObject -Class Win32_ComputerSystem).PartOfDomain
-if ($chkdomstat -eq "true") {Write-Host "Went to join domain"}
-else {Write-Host "Went to install apps"}
+[bool]$chkdomstat = (Get-WmiObject -Class Win32_ComputerSystem).PartOfDomain
+if ($chkdomstat -eq $true) {}
+else {}
 
 
