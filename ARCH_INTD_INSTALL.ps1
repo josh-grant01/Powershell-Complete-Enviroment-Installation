@@ -168,6 +168,9 @@ class AppInstallQueue {
 
     # 300 = 5 minutes.
     [int]$RestartDelaySeconds = 20
+    [string]$AutoLogonUser
+    [string]$AutoLogonPassword
+    [string]$AutoLogonDomain
     
     AppInstallQueue([arrary]$appDefinitions, [string]$ScriptPath) {
         $this.ScriptPath = $ScriptPath
@@ -198,10 +201,12 @@ class AppInstallQueue {
                 return
             }
         }
+        this.DisableAutoLogon()
         Write-Host "All apps in the queue completed successfully."
     }
 
     [void]ScheduleRestartAndResume() {
+        $this.EnableAutoLogon()
         New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce" `
             -Name "ResumeAppInstallQueue" -Value "powershell.exe -ExecutionPolicy Bypass -File `"$($this.ScriptPath)`"" `
             -PropertyType String -Force | Out-Null
@@ -209,10 +214,33 @@ class AppInstallQueue {
         shutdown.exe /r /t $this.RestartDelaySeconds /c "Installation requires a restart to continue.  Your computer will restart automatically."
     }
 
+    # Turns on unattended auto-login for the deployment account.  Called only
+    # when a restart is about to happen.
+    [void]EnableAutoLogon() {
+        $WinLogonPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
+        Net-ItemProperty -Path $WinLogonPath -Name "AutoAdminLogon" -Value "1" -PropertyType String -Force | Out-Null
+        New-ItemProperty -Path $WinLogonPath -Name "DefaultUserName" -Value $this.AutoLogonUser -PropertyType String -Force | Out-Null
+        New-ItemProperty -Path $WinLogonPath -Name "DefaultPassword" -Value $this.AutoLogonPassword -PropertyType String -Force | Out-Null
+        New-ItemProperty -Path $WinLogonPath -Name "DefaultDomainName" -Value $this.AutoLogonDomain -PropertyType String -Force | Out-Null
+    }
+
+    # Turns auto-login back off and clears the stored password immediately
+    [void]DisableAutoLogon() {
+        $WinLogonPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
+        New-ItemProperty -Path $WinLogonPath -Name "AutoAdminLogon" -Value "0" -PropertyType String -Force | Out-Null
+        New-ItemProperty -Path $WinLogonPath -Name "DefaultPassword" -Value "" -PropertyType String -Force | Out-Null
+        New-ItemProperty -Path $WinLogonPath -Name "DefaultDomainName" -Value "" -PropertyType String -Force | Out-Null
+        New-ItemProperty -Path $WinLogonPath -Name "DefaultUserName" -Value "" -PropertyType String -Force | Out-Null
+    }
+
 }
 
-$queueOne = [AppInstallQueue]::new($Nprograms)
-$queueTwo = [AppInstallQueue]::new($Bprograms)
+$queue = [AppInstallQueue]::new($Nprograms, $PSCommandPath)
+
+# Deployment account
+$queue.AutoLogonUser = ""
+$queue.AutoLogonPassword = ""
+$queue.AutoLogonDomain = "SLCCI"
 
 
 # Does the intial check to see if computer is added to STUDENTI domain
