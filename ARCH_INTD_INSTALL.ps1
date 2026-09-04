@@ -90,6 +90,7 @@ class AppInstallation {
         else {
             $progdataPath = Join-Path $env:ProgramData $this.AppName
             Write-Host "Found existing data for $($this.AppName) in ProgramData:"
+          <#  
             tree.com "$prodataPath" /F
             $deleteAnswer = (Read-Host "Delete this directory? (y/n)").Trim()
             $continueAnswer = (Read-Host "Continue with install? (y/n)").Trim()
@@ -103,6 +104,7 @@ class AppInstallation {
                 $this.Logs("Deleting leftover directory: $prodataPath")
                 Remove-Item -Path $prodataPath -Recurse -Force -Verbose
             }
+          #>
             $this.Installer($this.AppName, $this.InstallerPath, $this.InstallerArgs)
         }
     }
@@ -168,10 +170,11 @@ class AppInstallQueue {
 
     # 300 = 5 minutes.
     [int]$RestartDelaySeconds = 20
+  <#
     [string]$AutoLogonUser
     [string]$AutoLogonPassword
     [string]$AutoLogonDomain
-    
+  #>  
     AppInstallQueue([arrary]$appDefinitions, [string]$ScriptPath) {
         $this.ScriptPath = $ScriptPath
         $this.Apps = [System.Collecctions.Generic.List[AppInstallation]]::new()
@@ -193,6 +196,7 @@ class AppInstallQueue {
             }
             catch {
                 Write-Host "Queue stopped - $($app.AppName) failed: $($_.Execption.Message)"
+                $this.RemoveResumeTask()
                 throw
             }
             if ($app.RequiresRestart -and $app.WasFreshInstall) {
@@ -201,46 +205,28 @@ class AppInstallQueue {
                 return
             }
         }
-        this.DisableAutoLogon()
+        this.RemoveResumeTask()
         Write-Host "All apps in the queue completed successfully."
     }
 
     [void]ScheduleRestartAndResume() {
-        $this.EnableAutoLogon()
-        New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce" `
-            -Name "ResumeAppInstallQueue" -Value "powershell.exe -ExecutionPolicy Bypass -File `"$($this.ScriptPath)`"" `
-            -PropertyType String -Force | Out-Null
+        $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -File `"$($this.ScriptPath)`""
+        $trigger = New-ScheduledTaskTrigger -AtStartup
+        $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+        $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -ExecutionTimeLimit ([TimeSpan]::Zero)
+
+        Register-ScheduledTask -TaskName "ResumeAppInstallationQueue" -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Force | Out-Null
         Write-Host "Restart required - restarting in $($this.RestartDelaySeconds) seconds..."
         shutdown.exe /r /t $this.RestartDelaySeconds /c "Installation requires a restart to continue.  Your computer will restart automatically."
     }
 
-    # Turns on unattended auto-login for the deployment account.  Called only
-    # when a restart is about to happen.
-    [void]EnableAutoLogon() {
-        $WinLogonPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
-        Net-ItemProperty -Path $WinLogonPath -Name "AutoAdminLogon" -Value "1" -PropertyType String -Force | Out-Null
-        New-ItemProperty -Path $WinLogonPath -Name "DefaultUserName" -Value $this.AutoLogonUser -PropertyType String -Force | Out-Null
-        New-ItemProperty -Path $WinLogonPath -Name "DefaultPassword" -Value $this.AutoLogonPassword -PropertyType String -Force | Out-Null
-        New-ItemProperty -Path $WinLogonPath -Name "DefaultDomainName" -Value $this.AutoLogonDomain -PropertyType String -Force | Out-Null
-    }
-
-    # Turns auto-login back off and clears the stored password immediately
-    [void]DisableAutoLogon() {
-        $WinLogonPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
-        New-ItemProperty -Path $WinLogonPath -Name "AutoAdminLogon" -Value "0" -PropertyType String -Force | Out-Null
-        New-ItemProperty -Path $WinLogonPath -Name "DefaultPassword" -Value "" -PropertyType String -Force | Out-Null
-        New-ItemProperty -Path $WinLogonPath -Name "DefaultDomainName" -Value "" -PropertyType String -Force | Out-Null
-        New-ItemProperty -Path $WinLogonPath -Name "DefaultUserName" -Value "" -PropertyType String -Force | Out-Null
+    [void]RemoveResumeTask() {
+        Unregister-ScheduledTask -TaskName "ResumeAppInstallationQueue" -Confirm:$false -ErrorAction SilentlyContinue
     }
 
 }
 
 $queue = [AppInstallQueue]::new($Nprograms, $PSCommandPath)
-
-# Deployment account
-$queue.AutoLogonUser = ""
-$queue.AutoLogonPassword = ""
-$queue.AutoLogonDomain = "SLCCI"
 
 
 # Does the intial check to see if computer is added to STUDENTI domain
