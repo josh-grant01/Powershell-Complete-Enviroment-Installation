@@ -31,22 +31,22 @@ $global:Nprograms = @(
 )
 $global:Bprograms = @(
     #Adobe CC 2026 Full Package
-    @{$AppName = "Adobe"; $InstallerPath = "\\artcomm\oit`$\Installers\Adobe\cc26\20260205-CC2026-SDL\Install2.cmd"; $InstallerArgs = "/c"},
+    @{Name = "Adobe"; Loc = "\\artcomm\oit`$\Installers\Adobe\cc26\20260205-CC2026-SDL\Install2.cmd"; Para = "/c"; RequiresRestart = $false},
     
     #Autodesk 2027 Full Package
-    @{$AppName = "Autodesk"; $InstallerPath = "\\ucsarch\apps$\Autodesk\2027\"; $InstallerArgs = ""},
+    @{Name = "Autodesk"; Loc = "\\ucsarch\apps$\Autodesk\2027\"; Para = ""; RequiresRestart = $false},
     
     #SketchUp Full 2026
-    @{$AppName = "SketchUp 2026"; $InstallerPath = "\\ucsrch\apps`$\Sketchup\*SketchUp*"; $InstallerArgs = "/silent,/FEATURES=fr,de,es,it,ja,scan_essentials,revit_importer"}
+    @{Name = "SketchUp 2026"; $Loc = "\\ucsrch\apps`$\Sketchup\*SketchUp*"; Para = "/silent,/FEATURES=fr,de,es,it,ja,scan_essentials,revit_importer"; RequiresRestart = $false}
     
     #Lumion Student 2026
-    @{$AppName = "Lumion Student 2026"; $InstallerPath = "\\ucsarch\apps`$\Lumion\Lumion_2025_0_2_Student_Download.exe"; $InstallerArgs = "--silent --silentautoexit"},
+    @{Name = "Lumion Student 2026"; Loc = "\\ucsarch\apps`$\Lumion\Lumion_2025_0_2_Student_Download.exe"; Para = "--silent --silentautoexit"; RequiresRestart = $false},
     
     #Lumion Plugin for Revit 2027
-    @{$AppName = "Lumion Plugin for Revit 2027"; $InstallerPath = "\\ucsarch\apps`$\Lumion\Revit_LiveSync_Plugin_Installation.bat"; $InstallerArgs = ""}
+    @{Name = "Lumion Plugin for Revit 2027"; Loc = "\\ucsarch\apps`$\Lumion\Revit_LiveSync_Plugin_Installation.bat"; Para = ""; RequiresRestart = $false}
 )
 #$global:Sprograms = ($AppName = "Security Cert for Lumion" $InstallerPath = "\\ucsarch\apps$\" $InstallerArgs = "")
-$global:Pprograms = ($AppName = "Prusa Software" $InstallerPath = "\\ucsarch\apps$\Prusa\" $InstallerArgs = "")
+$global:Pprograms = (Name = "Prusa Software" Loc = "\\ucsarch\apps$\Prusa\" Para = ""; RequiresRestart = $false)
 <#$global:Example = @(
     @{$AppName = "SketchUp 2026"; $InstallerPath = "\\ucsrch\apps`$\Sketchup\*SketchUp*"; $InstallerArgs = "/silent,/FEATURES=fr,de,es,it,ja,scan_essentials,revit_importer"}
 )#>
