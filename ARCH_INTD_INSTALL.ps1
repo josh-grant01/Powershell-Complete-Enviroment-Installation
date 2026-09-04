@@ -120,11 +120,18 @@ class AppInstallation {
         $this.Logs("Installer started for $name ($loc $para)")
 
         try {
-            $process = Start-Process -FilePath $loc -ArgumentList $para -Wait -PassThru -ErrorAction Stop
-            if ($process.ExitCode -ne 0) {
+            $process = Start-Process -FilePath $loc -ArgumentList $para -WorkingDirectory (Split-Path -Path $loc -Parent) -Wait -PassThru -ErrorAction Stop
+            if ($process.ExitCode -eq 3010) {
+                $this.Logs("$name installed successfully (exit code 3010 - restart required).")
+                $this.RequiresRestart = $true
+            }
+            elseif ($process.ExitCode -ne 0) {
                 throw "Installer exited with code $($process.ExitCode)"
             }
-            this.Los("$name installed successfully (exit code 0).")
+            else {
+                $this.Logs("$name installed successfully (exit code 0).")
+            }
+            #$this.Los("$name installed successfully (exit code 0).")
             $this.ReturnResult('InstallSuccess')
         }
         catch {
