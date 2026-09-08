@@ -25,27 +25,27 @@ if (-not $IsAdmin) {
 # --- End self-elevation block ---
 
 $global:Nprograms = @(
-    @{Name = "Ninite"; Loc = "\\JFLIPLT\Software\Ninite\Ninite 7Zip Audacity Chrome Discord Firefox Installer.exe"; Para = "/silent C:\Logs\Ninite\Install.txt"; RequiresRestart = $false},
+    # @{Name = "Ninite"; Loc = "\\JFLIPLT\Software\Ninite\Ninite 7Zip Audacity Chrome Discord Firefox Installer.exe"; Para = "/silent C:\Logs\Ninite\Install.txt /select [firefox,7Zip]"; RequiresRestart = $false},
     @{Name = "Nvidia App"; Loc = "\\JFLIPLT\Software\Nvidia\App\NVIDIA_app_v11.0.8.299.exe"; Para = "/s"; RequiresRestart = $true},
     # @{Name = "Nvidia Driver"; Loc = "\\ucsarch\apps`$\Drivers\Nvidia_Stable_570_Channel\573.96-quadro-rtx-desktop-notebook-win10-win11-64bit-international-dch-whql.exe"; Para = "/s"; RequiresRestart = $true}
 
     #Adobe CC 2026 Full Package
-    # @{Name = "Adobe"; Loc = "\\artcomm\oit`$\Installers\Adobe\cc26\20260205-CC2026-SDL\Install2.cmd"; Para = "/c"; RequiresRestart = $false},
+    # @{Name = "Creative Cloud"; Loc = "\\artcomm\oit`$\Installers\Adobe\cc26\20260205-CC2026-SDL\Install2.cmd"; Para = "/c"; RequiresRestart = $false},
     
     #Autodesk 2027 Full Package
-    # @{Name = "Autodesk"; Loc = "\\ucsarch\apps$\Autodesk\2027\"; Para = ""; RequiresRestart = $false},
+    # @{Name = "Acad"; Loc = "\\ucsarch\apps$\Autodesk\2027\"; Para = ""; RequiresRestart = $false},
     
     #SketchUp Full 2026
-    @{Name = "SketchUp 2026"; Loc = "\\JFLIPLT\Software\SketchUp\SketchUp 2026\SketchUp-2026-2-243-76.exe"; Para = "/silent,/FEATURES=fr,de,es,it,ja,scan_essentials,revit_importer"; RequiresRestart = $false}
+    @{Name = "SketchUp"; Loc = "\\JFLIPLT\Software\SketchUp\SketchUp 2026\SketchUp-2026-2-243-76.exe"; Para = "/silent,/FEATURES=fr,de,es,it,ja,scan_essentials,revit_importer"; RequiresRestart = $false}
     
     #Lumion Student 2026
-    # @{Name = "Lumion Student 2026"; Loc = "\\ucsarch\apps`$\Lumion\Lumion_2025_0_2_Student_Download.exe"; Para = "--silent --silentautoexit"; RequiresRestart = $false},
+    # @{Name = "Lumion"; Loc = "\\ucsarch\apps`$\Lumion\Lumion_2025_0_2_Student_Download.exe"; Para = "--silent --silentautoexit"; RequiresRestart = $false},
     
     #Lumion Plugin for Revit 2027
     @{Name = "Lumion Plugin for Revit 2027"; Loc = "\\JFLIPLT\Software\Lumion\LumionPluginSIlentInstall.bat"; Para = ""; RequiresRestart = $false}
 )
 #$global:Sprograms = ($AppName = "Security Cert for Lumion" $InstallerPath = "\\ucsarch\apps$\" $InstallerArgs = "")
-$global:Pprograms = (Name = "Prusa Software" Loc = "\\ucsarch\apps$\Prusa\" Para = ""; RequiresRestart = $false)
+$global:Pprograms = {Name = "Prusa Software" Loc = "\\ucsarch\apps$\Prusa\" Para = ""; RequiresRestart = $false}
 <#$global:Example = @(
     @{$AppName = "SketchUp 2026"; $InstallerPath = "\\ucsrch\apps`$\Sketchup\*SketchUp*"; $InstallerArgs = "/silent,/FEATURES=fr,de,es,it,ja,scan_essentials,revit_importer"}
 )#>
@@ -69,7 +69,7 @@ class AppInstallation {
     [void]Checker() {
         $this.Logs("App Checker started for $($this.AppName)")
         $prog64checker = [bool](Get-ChildItem -Path $env:ProgramFiles -Filter "*$($this.AppName)*" -Recurse -Directory -ErrorAction SilentlyContinue)
-        $prog86checker = [bool](Get-ChildItem -Path $env:ProgramFiles(x86) -Filter "*$($this.AppName)*" -Recurse -Directory -ErrorAction SilentlyContinue)
+        $prog86checker = [bool](Get-ChildItem -Path ${env:ProgramFiles(x86)} -Filter "*$($this.AppName)*" -Recurse -Directory -ErrorAction SilentlyContinue)
         $progdatachecker = [bool](Get-ChildItem -Path $env:ProgramData -Filter "*$($this.AppName)*" -Recurse -Directory -ErrorAction SilentlyContinue)
         $this.Logs("Results - Program Files check = $prog64checker, Program Files (x86) check = $prog86checker, Program Data check = $progdatachecker")
 
@@ -181,12 +181,12 @@ class AppInstallQueue {
     [string]$AutoLogonPassword
     [string]$AutoLogonDomain
   #>  
-    AppInstallQueue([arrary]$appDefinitions, [string]$ScriptPath) {
+    AppInstallQueue([array]$appDefinitions, [string]$ScriptPath) {
         $this.ScriptPath = $ScriptPath
-        $this.Apps = [System.Collecctions.Generic.List[AppInstallation]]::new()
+        $this.Apps = [System.Collections.Generic.List[AppInstallation]]::new()
 
         foreach ($def in $appDefinitions) {
-            $app = [AppInstallaiton]::new($def.Name, $def.Loc, $def.Para)
+            $app = [AppInstallation]::new($def.Name, $def.Loc, $def.Para)
             if ($def.ContainsKey('RequiresRestart')) {
                 $app.RequiresRestart = [bool]$def.RequiresRestart
             }
@@ -211,7 +211,7 @@ class AppInstallQueue {
                 return
             }
         }
-        this.RemoveResumeTask()
+        $this.RemoveResumeTask()
         Write-Host "All apps in the queue completed successfully."
     }
 
@@ -233,11 +233,11 @@ class AppInstallQueue {
 }
 
 $queue = [AppInstallQueue]::new($Nprograms, $PSCommandPath)
-
+$queue.Run()
 
 # Does the intial check to see if computer is added to STUDENTI domain
-[bool]$chkdomstat = (Get-WmiObject -Class Win32_ComputerSystem).PartOfDomain
+<#[bool]$chkdomstat = (Get-WmiObject -Class Win32_ComputerSystem).PartOfDomain
 if ($chkdomstat -eq $true) {}
 else {}
-
+#>
 
