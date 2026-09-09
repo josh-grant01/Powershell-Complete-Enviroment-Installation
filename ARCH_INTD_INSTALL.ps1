@@ -25,31 +25,68 @@ if (-not $IsAdmin) {
 # --- End self-elevation block ---
 
 $global:Nprograms = @(
-    @{Name = "Ninite"; Loc = "\\ucsarch\apps`$\NINITE\Labs042026\Ninite 7Zip ASPNET Core Runtime 10 Installer.exe"; Para = "/silent C:\Logs\Ninite\Install.txt"; RequiresRestart = $false},
-    @{Name = "Nvidia App"; Loc = "\\ucsarch\apps`$\Drivers\NVIDIA_app_v11.0.6.383.exe"; Para = "/s"; RequiresRestart = $true},
-    @{Name = "Nvidia Driver"; Loc = "\\ucsarch\apps`$\Drivers\Nvidia_Stable_570_Channel\573.96-quadro-rtx-desktop-notebook-win10-win11-64bit-international-dch-whql.exe"; Para = "/s"; RequiresRestart = $true}
+    #@{Name = "Ninite"; Loc = "\\ucsarch\apps`$\NINITE\Labs042026\Ninite 7Zip ASPNET Core Runtime 10 Installer.exe"; Para = "/silent C:\Logs\Ninite\Install.txt"; RequiresRestart = $false},
+    @{Name = "Nvidia App"; Loc = "\\ucsarch\apps`$\Drivers\NVIDIA_app*.exe"; Para = "/s"; RequiresRestart = $true},
+    @{Name = "Nvidia Driver"; Loc = "\\ucsarch\apps`$\Drivers\Nvidia_Stable_*_Channel\*quadro-rtx-desktop-notebook-win10-win11-64bit-international-dch-whql.exe"; Para = "/s"; RequiresRestart = $true}
 )
 $global:Bprograms = @(
     #Adobe CC 2026 Full Package
-    @{Name = "Adobe"; Loc = "\\artcomm\oit`$\Installers\Adobe\cc26\20260205-CC2026-SDL\Install2.cmd"; Para = "/c"; RequiresRestart = $false},
+    @{Name = "Creative Cloud"; Loc = "\\artcomm\oit`$\Installers\Adobe\cc26\20260205-CC2026-SDL\Install2.cmd"; Para = "/c"; RequiresRestart = $false},
     
     #Autodesk 2027 Full Package
-    @{Name = "Autodesk"; Loc = "\\ucsarch\apps$\Autodesk\2027\"; Para = ""; RequiresRestart = $false},
+    @{Name = "Acad"; Loc = "\\ucsarch\apps$\Autodesk\2027\"; Para = ""; RequiresRestart = $true},
     
     #SketchUp Full 2026
-    @{Name = "SketchUp 2026"; $Loc = "\\ucsrch\apps`$\Sketchup\*SketchUp*"; Para = "/silent,/FEATURES=fr,de,es,it,ja,scan_essentials,revit_importer"; RequiresRestart = $false}
+    @{Name = "SketchUp"; $Loc = "\\ucsrch\apps`$\Sketchup\*SketchUp*"; Para = "/silent,/FEATURES=fr,de,es,it,ja,scan_essentials,revit_importer"; RequiresRestart = $false}
     
     #Lumion Student 2026
-    @{Name = "Lumion Student 2026"; Loc = "\\ucsarch\apps`$\Lumion\Lumion_2025_0_2_Student_Download.exe"; Para = "--silent --silentautoexit"; RequiresRestart = $false},
+    @{Name = "Lumion"; Loc = "\\ucsarch\apps`$\Lumion\Lumion*.exe"; Para = "--silent --silentautoexit"; RequiresRestart = $false},
     
     #Lumion Plugin for Revit 2027
     @{Name = "Lumion Plugin for Revit 2027"; Loc = "\\ucsarch\apps`$\Lumion\Revit_LiveSync_Plugin_Installation.bat"; Para = ""; RequiresRestart = $false}
 )
 #$global:Sprograms = ($AppName = "Security Cert for Lumion" $InstallerPath = "\\ucsarch\apps$\" $InstallerArgs = "")
 $global:Pprograms = (Name = "Prusa Software" Loc = "\\ucsarch\apps$\Prusa\" Para = ""; RequiresRestart = $false)
-<#$global:Example = @(
-    @{$AppName = "SketchUp 2026"; $InstallerPath = "\\ucsrch\apps`$\Sketchup\*SketchUp*"; $InstallerArgs = "/silent,/FEATURES=fr,de,es,it,ja,scan_essentials,revit_importer"}
-)#>
+
+winget install --id Microsoft.Edge --scope machine -a x64 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Google.Chrome --scope machine -a x64 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Mozilla.Firefox --scope machine -a x64 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Microsoft.Onedrive --scope machine -a x64 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Notepad++.Notepad++ --scope machine -a x64 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Zoom.Zoom --scope machine -a x64 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Zoom.ZoomOutlookPlugin --scope machine -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Zoom.ZoomSkypeForBusinessPlugin --scope machine -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Zoom.ZoomRemoteControl --scope machine -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Zoom.ZoomRooms --scope machine -a x64 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Microsoft.Teams --scope machine -a x64 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Google.EarthPro --scope machine -a x64 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id VideoLAN.VLC --scope machine -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Microsoft.DotNet.Framework.DeveloperPack_4 --scope machine -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+#winget install --id Microsoft.DotNet.Framework.Runtime --scope machine -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+#winget install --id Microsoft.DotNet.AspNetCore.Preview --scope machine -a x64 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Microsoft.DotNet.AspNetCore.8 --scope machine -a x64 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Microsoft.DotNet.AspNetCore.8 --scope machine -a x86 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Microsoft.DotNet.AspNetCore.9 --scope machine -a x64 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Microsoft.DotNet.AspNetCore.9 --scope machine -a x86 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Microsoft.DotNet.AspNetCore.10 --scope machine -a x64 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Microsoft.DotNet.AspNetCore.10 --scope machine -a x86 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Microsoft.DotNet.DesktopRuntime.Preview --scope machine -a x64 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Microsoft.DotNet.DesktopRuntime.8 --scope machine -a x64 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Microsoft.DotNet.DesktopRuntime.8 --scope machine -a x86 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Microsoft.DotNet.DesktopRuntime.9 --scope machine -a x64 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Microsoft.DotNet.DesktopRuntime.9 --scope machine -a x86 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Microsoft.DotNet.DesktopRuntime.10 --scope machine -a x64 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Microsoft.DotNet.DesktopRuntime.10 --scope machine -a x86 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Microsoft.VCRedist.2010.x64 --scope machine -a x64 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Microsoft.VCRedist.2010.x86 --scope machine -a x86 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Microsoft.VCRedist.2012.x64 --scope machine -a x64 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Microsoft.VCRedist.2012.x86 --scope machine -a x86 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Microsoft.VCRedist.2013.x64 --scope machine -a x64 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Microsoft.VCRedist.2013.x86 --scope machine -a x86 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Microsoft.VCRedist.2015+.x64 --scope machine -a x64 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id Microsoft.VCRedist.2015+.x86 --scope machine -a x86 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+winget install --id 7zip.7zip --scope machine -a x86 -h --accept-package-agreements --authentication-mode silent --authentication-account SYSTEM --accept-source-agreements --force --verbose --disable-interactivity
+
 
 class AppInstallation {
 
