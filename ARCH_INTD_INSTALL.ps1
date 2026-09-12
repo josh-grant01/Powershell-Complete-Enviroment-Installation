@@ -159,7 +159,15 @@ class AppInstallation {
         $this.Logs("Installer started for $name ($loc $para)")
 
         try {
-            $process = Start-Process -FilePath $loc -ArgumentList $para -WorkingDirectory (Split-Path -Path $loc -Parent) -Wait -PassThru -ErrorAction Stop
+            if ($name -eq "Nvidia App") {
+                $this.Logs("Running Nvidia App installer with elevated privileges.")
+                $process = Start-Process -FilePath $loc -ArgumentList $para -Wait -PassThru -ErrorAction Stop
+            }
+            else {
+                $this.Logs("Running installer for $name.")
+                $process = Start-Process -FilePath $loc -ArgumentList $para -WorkingDirectory (Split-Path -Path $loc -Parent) -Wait -PassThru -ErrorAction Stop
+            }
+            # $process = Start-Process -FilePath $loc -ArgumentList $para -WorkingDirectory (Split-Path -Path $loc -Parent) -Wait -PassThru -ErrorAction Stop
             if ($process.ExitCode -eq 3010) {
                 $this.Logs("$name installed successfully (exit code 3010 - restart required).")
                 $this.RequiresRestart = $true
