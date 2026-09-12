@@ -39,7 +39,7 @@ $global:Nprograms = @(
     @{Name = "SketchUp"; Loc = "\\JFLIPLT\Software\SketchUp\SketchUp*.exe"; Para = "/silent,/FEATURES=fr,de,es,it,ja,scan_essentials,revit_importer"; RequiresRestart = $false}
     
     #Lumion Student 2026
-    @{Name = "Lumion"; Loc = "\\ucsarch\apps`$\Lumion\Lumion_2025_0_2_Student_Download.exe"; Para = "--silent --silentautoexit"; RequiresRestart = $false},
+    @{Name = "Lumion"; Loc = "\\JFLIPLT\Software\Lumion\Lumion_2026_0_2_Student_Download.exe"; Para = "--silent --silentautoexit"; RequiresRestart = $false},
     
     #Lumion Plugin for Revit 2027
     @{Name = "Lumion Plugin for Revit 2027"; Loc = "\\JFLIPLT\Software\Lumion\LumionPluginSIlentInstall.bat"; Para = ""; RequiresRestart = $false}
