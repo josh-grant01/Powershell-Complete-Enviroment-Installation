@@ -2,7 +2,7 @@
 
 Made by: Josh Grant
 Created on: 08/30/26
-Modified on: 08/31/26
+Modified on: 09/12/26
 
 Architecture x64
 OS: Windows 11 25H2
@@ -26,14 +26,14 @@ if (-not $IsAdmin) {
 
 $global:Nprograms = @(
     # @{Name = "Ninite"; Loc = "\\JFLIPLT\Software\Ninite\Ninite 7Zip Audacity Chrome Discord Firefox Installer.exe"; Para = "/silent C:\Logs\Ninite\Install.txt /select [firefox,7Zip]"; RequiresRestart = $false},
-    @{Name = "Nvidia App"; Loc = "\\JFLIPLT\Software\Nvidia\App\NVIDIA_app_v11.0.8.299.exe"; Para = "/s"; RequiresRestart = $true},
-    # @{Name = "Nvidia Driver"; Loc = "\\ucsarch\apps`$\Drivers\Nvidia_Stable_570_Channel\573.96-quadro-rtx-desktop-notebook-win10-win11-64bit-international-dch-whql.exe"; Para = "/s"; RequiresRestart = $true}
+    @{Name = "Nvidia App"; Loc = "\\JFLIPLT\Software\Nvidia\App\InsNVApp.bat"; Para = "-Verbose -Edition Public -Force"; RequiresRestart = $false},
+    @{Name = "Nvidia Driver"; Loc = "\\JFLIPLT\Software\Nvidia\Driver\596.36\setup.exe"; Para = "-s"; RequiresRestart = $false}
 
     #Adobe CC 2026 Full Package
     # @{Name = "Creative Cloud"; Loc = "\\artcomm\oit`$\Installers\Adobe\cc26\20260205-CC2026-SDL\Install2.cmd"; Para = "/c"; RequiresRestart = $false},
     
     #Autodesk 2027 Full Package
-    # @{Name = "Acad"; Loc = "\\ucsarch\apps$\Autodesk\2027\"; Para = ""; RequiresRestart = $false},
+    @{Name = "Acad"; Loc = "\\ucsarch\apps$\Autodesk\2027\"; Para = "--offline_mode -q -o"; RequiresRestart = $false},
     
     #SketchUp Full 2026
     @{Name = "SketchUp"; Loc = "\\JFLIPLT\Software\SketchUp\SketchUp 2026\SketchUp-2026-2-243-76.exe"; Para = "/silent,/FEATURES=fr,de,es,it,ja,scan_essentials,revit_importer"; RequiresRestart = $false}
