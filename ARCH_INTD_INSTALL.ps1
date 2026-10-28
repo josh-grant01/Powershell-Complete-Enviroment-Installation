@@ -26,23 +26,22 @@ if (-not $IsAdmin) {
 
 $global:Nprograms = @(
     #@{Name = "Ninite"; Loc = "\\ucsarch\apps`$\NINITE\Labs042026\Ninite 7Zip ASPNET Core Runtime 10 Installer.exe"; Para = "/silent C:\Logs\Ninite\Install.txt"; RequiresRestart = $false},
-    @{Name = "Nvidia App"; Loc = "\\ucsarch\apps`$\Drivers\NVIDIA_app*.exe"; Para = "/s"; RequiresRestart = $true},
-    @{Name = "Nvidia Driver"; Loc = "\\ucsarch\apps`$\Drivers\Nvidia_Stable_*_Channel\*quadro-rtx-desktop-notebook-win10-win11-64bit-international-dch-whql.exe"; Para = "/s"; RequiresRestart = $true}
-)
-$global:Bprograms = @(
-    #Adobe CC 2026 Full Package
-    @{Name = "Creative Cloud"; Loc = "\\artcomm\oit`$\Installers\Adobe\cc26\20260205-CC2026-SDL\Install2.cmd"; Para = "/c"; RequiresRestart = $false},
+    @{Name = "Nvidia App"; Loc = "\\ucsarch\apps`$\Drivers\InsNVApp.bat"; Para = "/s"; RequiresRestart = $false},
+    @{Name = "Nvidia Driver"; Loc = "\\ucsarch\apps`$\Drivers\Nvidia_Stable_*_Channel\*quadro-rtx-desktop-notebook-win10-win11-64bit-international-dch-whql.exe"; Para = "/s"; RequiresRestart = $false}
     
-    #Autodesk 2027 Full Package
-    @{Name = "Acad"; Loc = "\\ucsarch\apps$\Autodesk\2027\"; Para = ""; RequiresRestart = $true},
+    #Adobe CC Latest Version Full Package
+    @{Name = "Creative Cloud"; Loc = "\\ucsarch\apps`$\Adobe\FullLatestVersionNoPause.lnk"; Para = "/c"; RequiresRestart = $false},
     
-    #SketchUp Full 2026
-    @{Name = "SketchUp"; Loc = "\\ucsrch\apps`$\Sketchup\*SketchUp*"; Para = "/silent,/FEATURES=fr,de,es,it,ja,scan_essentials,revit_importer"; RequiresRestart = $false}
+    #Autodesk Latest Version Full Package
+    @{Name = "Acad"; Loc = "\\ucsarch\apps$\Autodesk\Autodesk.lnk"; Para = ""; RequiresRestart = $true},
     
-    #Lumion Student 2026
-    @{Name = "Lumion"; Loc = "\\ucsarch\apps`$\Lumion\Lumion*.exe"; Para = "--silent --silentautoexit"; RequiresRestart = $false},
+    #SketchUp Full Latest Version
+    @{Name = "SketchUp"; Loc = "\\ucsrch\apps`$\Sketchup\SketchUp.lnk"; Para = "/silent,/FEATURES=fr,de,es,it,ja,scan_essentials,revit_importer"; RequiresRestart = $false}
     
-    #Lumion Plugin for Revit 2027
+    #Lumion Student Latest Version
+    @{Name = "Lumion"; Loc = "\\ucsarch\apps`$\Lumion\Lumion.lnk"; Para = "--silent --silentautoexit"; RequiresRestart = $false},
+    
+    #Lumion Plugin for Revit Latest Version
     @{Name = "Lumion Plugin for Revit 2027"; Loc = "\\ucsarch\apps`$\Lumion\Revit_LiveSync_Plugin_Installation.bat"; Para = ""; RequiresRestart = $false}
 )
 #$global:Sprograms = ($AppName = "Security Cert for Lumion" $InstallerPath = "\\ucsarch\apps$\" $InstallerArgs = "")
