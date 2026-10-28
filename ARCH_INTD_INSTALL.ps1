@@ -25,9 +25,8 @@ if (-not $IsAdmin) {
 # --- End self-elevation block ---
 
 $global:Nprograms = @(
-    #@{Name = "Ninite"; Loc = "\\ucsarch\apps`$\NINITE\Labs042026\Ninite 7Zip ASPNET Core Runtime 10 Installer.exe"; Para = "/silent C:\Logs\Ninite\Install.txt"; RequiresRestart = $false},
-    @{Name = "Nvidia App"; Loc = "\\ucsarch\apps`$\Drivers\InsNVApp.bat"; Para = "/s"; RequiresRestart = $false},
-    @{Name = "Nvidia Driver"; Loc = "\\ucsarch\apps`$\Drivers\Nvidia_Stable_*_Channel\*quadro-rtx-desktop-notebook-win10-win11-64bit-international-dch-whql.exe"; Para = "/s"; RequiresRestart = $false}
+    @{Name = "Nvidia App"; Loc = "\\ucsarch\apps`$\Drivers\InsNVApp.bat"; Para = "-Verbose -Edition Public -Force"; RequiresRestart = $false},
+    @{Name = "Nvidia Driver"; Loc = "\\ucsarch\apps`$\Drivers\NVDriver.lnk"; Para = "-s -n Display.Driver"; RequiresRestart = $false}
     
     #Adobe CC Latest Version Full Package
     @{Name = "Creative Cloud"; Loc = "\\ucsarch\apps`$\Adobe\FullLatestVersionNoPause.lnk"; Para = "/c"; RequiresRestart = $false},
@@ -44,7 +43,6 @@ $global:Nprograms = @(
     #Lumion Plugin for Revit Latest Version
     @{Name = "Lumion Plugin for Revit 2027"; Loc = "\\ucsarch\apps`$\Lumion\Revit_LiveSync_Plugin_Installation.bat"; Para = ""; RequiresRestart = $false}
 )
-#$global:Sprograms = ($AppName = "Security Cert for Lumion" $InstallerPath = "\\ucsarch\apps$\" $InstallerArgs = "")
 #$global:Pprograms = (Name = "Prusa Software" Loc = "\\ucsarch\apps$\Prusa\" Para = "" RequiresRestart = $false)
 
 winget install --id Microsoft.Edge --scope machine -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
@@ -106,7 +104,7 @@ class AppInstallation {
     [void]Checker() {
         $this.Logs("App Checker started for $($this.AppName)")
         $prog64checker = [bool](Get-ChildItem -Path $env:ProgramFiles -Filter "*$($this.AppName)*" -Recurse -Directory -ErrorAction SilentlyContinue)
-        $prog86checker = [bool](Get-ChildItem -Path $env:ProgramFiles(x86) -Filter "*$($this.AppName)*" -Recurse -Directory -ErrorAction SilentlyContinue)
+        $prog86checker = [bool](Get-ChildItem -Path ${env:ProgramFiles(x86)} -Filter "*$($this.AppName)*" -Recurse -Directory -ErrorAction SilentlyContinue)
         $progdatachecker = [bool](Get-ChildItem -Path $env:ProgramData -Filter "*$($this.AppName)*" -Recurse -Directory -ErrorAction SilentlyContinue)
         $this.Logs("Results - Program Files check = $prog64checker, Program Files (x86) check = $prog86checker, Program Data check = $progdatachecker")
 
@@ -156,7 +154,15 @@ class AppInstallation {
         $this.Logs("Installer started for $name ($loc $para)")
 
         try {
-            $process = Start-Process -FilePath $loc -ArgumentList $para -WorkingDirectory (Split-Path -Path $loc -Parent) -Wait -PassThru -ErrorAction Stop
+            if ($name -eq "Nvidia App") {
+                $this.Logs("Running Nvidia App installer with elevated privileges.")
+                $process = Start-Process -FilePath $loc -ArgumentList $para -Wait -PassThru -ErrorAction Stop
+            }
+            else {
+                $this.Logs("Running installer for $name.")
+                $process = Start-Process -FilePath $loc -ArgumentList $para -WorkingDirectory (Split-Path -Path $loc -Parent) -Wait -PassThru -ErrorAction Stop
+            }
+            # $process = Start-Process -FilePath $loc -ArgumentList $para -WorkingDirectory (Split-Path -Path $loc -Parent) -Wait -PassThru -ErrorAction Stop
             if ($process.ExitCode -eq 3010) {
                 $this.Logs("$name installed successfully (exit code 3010 - restart required).")
                 $this.RequiresRestart = $true
@@ -270,11 +276,10 @@ class AppInstallQueue {
 }
 
 $queue = [AppInstallQueue]::new($Nprograms, $PSCommandPath)
-
+$queue.Run()
 
 # Does the intial check to see if computer is added to STUDENTI domain
-[bool]$chkdomstat = (Get-WmiObject -Class Win32_ComputerSystem).PartOfDomain
+<#[bool]$chkdomstat = (Get-WmiObject -Class Win32_ComputerSystem).PartOfDomain
 if ($chkdomstat -eq $true) {}
 else {}
-
-
+#>
