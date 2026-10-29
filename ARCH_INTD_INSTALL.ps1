@@ -2,12 +2,12 @@
 
 Made by: Josh Grant
 Created on: 08/30/26
-Modified on: 08/31/26
+Modified on: 10/29/26
 
 Architecture x64
 OS: Windows 11 25H2
 Manufactor: Dell
-Model: Presicion T5820
+Model: Precision T5820
 
 #>
 
