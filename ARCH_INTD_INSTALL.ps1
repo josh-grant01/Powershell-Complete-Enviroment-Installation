@@ -25,17 +25,17 @@ if (-not $IsAdmin) {
 # --- End self-elevation block ---
 
 $global:Nprograms = @(
-    @{Name = "Nvidia App"; Loc = "\\ucsarch\apps`$\Drivers\InsNVApp.bat"; Para = "-Verbose -Edition Public -Force"; RequiresRestart = $false},
+    @{Name = "Nvidia App"; Loc = "\\ucsarch\apps`$\Drivers\InsNVApp.bat"; Para = "-Verbose -Edition Enterprise -Force"; RequiresRestart = $false},
     @{Name = "Nvidia Driver"; Loc = "\\ucsarch\apps`$\Drivers\NVDriver.lnk"; Para = "-s -n Display.Driver"; RequiresRestart = $false}
     
     #Adobe CC Latest Version Full Package
-    @{Name = "Creative Cloud"; Loc = "\\ucsarch\apps`$\Adobe\FullLatestVersionNoPause.lnk"; Para = "/c"; RequiresRestart = $false},
+    @{Name = "Creative Cloud"; Loc = "\\ucsarch\apps`$\Adobe\Install2.cmd.lnk"; Para = "/c"; RequiresRestart = $false},
     
     #Autodesk Latest Version Full Package
-    @{Name = "Acad"; Loc = "\\ucsarch\apps$\Autodesk\Autodesk.lnk"; Para = ""; RequiresRestart = $true},
+    @{Name = "Acad"; Loc = "\\ucsarch\apps`$\Autodesk\Install 2027_Everything - Silent.bat.lnk"; Para = "--offline_mode -q -o"; RequiresRestart = $true},
     
     #SketchUp Full Latest Version
-    @{Name = "SketchUp"; Loc = "\\ucsrch\apps`$\Sketchup\SketchUp.lnk"; Para = "/silent,/FEATURES=fr,de,es,it,ja,scan_essentials,revit_importer"; RequiresRestart = $false}
+    @{Name = "SketchUp"; Loc = "\\ucsarch\apps`$\Sketchup\SketchUp.lnk"; Para = "/silent,/FEATURES=fr,de,es,it,ja,scan_essentials,revit_importer"; RequiresRestart = $false}
     
     #Lumion Student Latest Version
     @{Name = "Lumion"; Loc = "\\ucsarch\apps`$\Lumion\Lumion.lnk"; Para = "--silent --silentautoexit"; RequiresRestart = $false},
