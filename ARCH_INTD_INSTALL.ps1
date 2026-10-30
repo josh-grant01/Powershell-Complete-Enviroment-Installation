@@ -32,7 +32,7 @@ $global:Nprograms = @(
     @{Name = "Creative Cloud"; Loc = "\\ucsarch\apps`$\Adobe\Install2.cmd.lnk"; Para = "/c"; RequiresRestart = $false},
     
     #Autodesk Latest Version Full Package
-    @{Name = "Acad"; Loc = "\\ucsarch\apps`$\Autodesk\Install 2027_Everything - Silent.bat.lnk"; Para = "--offline_mode -q -o"; RequiresRestart = $true},
+    @{Name = "Acad"; Loc = "\\ucsarch\apps`$\Autodesk\Install 2027_Everything - Silent.bat.lnk"; Para = "--offline_mode -q -o -W"; RequiresRestart = $true},
     
     #SketchUp Full Latest Version
     @{Name = "SketchUp"; Loc = "\\ucsarch\apps`$\Sketchup\SketchUp.lnk"; Para = "/silent,/FEATURES=fr,de,es,it,ja,scan_essentials,revit_importer"; RequiresRestart = $false}
