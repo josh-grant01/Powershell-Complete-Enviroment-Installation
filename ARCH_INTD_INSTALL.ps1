@@ -25,7 +25,7 @@ if (-not $IsAdmin) {
 # --- End self-elevation block ---
 
 $global:Nprograms = @(
-    @{Name = "Nvidia App"; Loc = "\\ucsarch\apps`$\Drivers\InsNVApp.bat"; Para = "-Verbose -Edition Enterprise -Force"; RequiresRestart = $false},
+    @{Name = "Nvidia App"; Loc = "\\ucsarch\apps`$\Drivers\InsNVApp.bat"; Para = "-Verbose -Edition Enterprise -Force -UseBasicParsing"; RequiresRestart = $false},
     @{Name = "Nvidia Driver"; Loc = "\\ucsarch\apps`$\Drivers\NVDriver.lnk"; Para = "-s -n Display.Driver"; RequiresRestart = $false}
     
     #Adobe CC Latest Version Full Package
