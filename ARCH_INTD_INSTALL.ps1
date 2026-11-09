@@ -1,13 +1,13 @@
-﻿<# This script is to check and install the Arch/Intd services and applications from a scratch stick install and/or after joining STUDENTI domain
+﻿<# .DOCUMENTATION This script is to check and install the Arch/Intd services and applications from a scratch stick install and after joining the STUDENTI domain
 
-Made by: Josh Grant
-Created on: 08/30/26
-Modified on: 10/29/26
+    Made by: Josh Grant
+    Created on: 08/30/26
+    Modified on: 11/09/26
 
-Architecture x64
-OS: Windows 11 25H2
-Manufactor: Dell
-Model: Precision T5820
+    Architecture x64
+    OS: Windows 11 26H2
+    Manufactor: Dell
+    Model: Precision T5820
 
 #>
 
@@ -26,16 +26,17 @@ if (-not $IsAdmin) {
 
 $global:Nprograms = @(
     @{Name = "Nvidia App"; Loc = "\\ucsarch\apps`$\Drivers\InsNVApp.bat"; Para = "-Verbose -Edition Enterprise -Force -UseBasicParsing"; RequiresRestart = $false},
-    @{Name = "Nvidia Driver"; Loc = "\\ucsarch\apps`$\Drivers\NVDriver.lnk"; Para = "-s -n Display.Driver"; RequiresRestart = $false}
+    @{Name = "Nvidia Driver"; Loc = "\\ucsarch\apps`$\Drivers\NVDriver.lnk"; Para = "-n -passive -nosplash -nofinish -noeula"; RequiresRestart = $false},
     
     #Adobe CC Latest Version Full Package
     @{Name = "Creative Cloud"; Loc = "\\ucsarch\apps`$\Adobe\Install2.cmd.lnk"; Para = "/c"; RequiresRestart = $false},
     
-    #Autodesk Latest Version Full Package
-    @{Name = "Acad"; Loc = "\\ucsarch\apps`$\Autodesk\Install 2027_Everything - Silent.bat.lnk"; Para = "--offline_mode -q -o -W"; RequiresRestart = $true},
+    # ========================================================== Autodesk Latest Version Full Package ===================================================================
+    # @{Name = "Acad"; Loc = "\\ucsarch\apps`$\Autodesk\Install 2027_Everything - Silent.bat.lnk"; Para = "--offline_mode -q -o -W"; RequiresRestart = $true},
+    @{Name = "Revit"; Loc = "\\ucsarch\apps`$\Autodesk\Install 2027_Everything - Silent.bat.lnk"; Para = "--offline_mode --ui_mode basic -o -W"; RequiresRestart = $true},
     
     #SketchUp Full Latest Version
-    @{Name = "SketchUp"; Loc = "\\ucsarch\apps`$\Sketchup\SketchUp.lnk"; Para = "/silent,/FEATURES=fr,de,es,it,ja,scan_essentials,revit_importer"; RequiresRestart = $false}
+    @{Name = "SketchUp"; Loc = "\\ucsarch\apps`$\Sketchup\SketchUp.lnk"; Para = "/silent,/FEATURES=fr,de,es,it,ja,scan_essentials,revit_importer"; RequiresRestart = $false},
     
     #Lumion Student Latest Version
     @{Name = "Lumion"; Loc = "\\ucsarch\apps`$\Lumion\Lumion.lnk"; Para = "--silent --silentautoexit"; RequiresRestart = $false},
@@ -43,8 +44,17 @@ $global:Nprograms = @(
     #Lumion Plugin for Revit Latest Version
     @{Name = "Lumion Plugin for Revit 2027"; Loc = "\\ucsarch\apps`$\Lumion\Revit_LiveSync_Plugin_Installation.bat"; Para = ""; RequiresRestart = $false}
 )
-#$global:Pprograms = (Name = "Prusa Software" Loc = "\\ucsarch\apps$\Prusa\" Para = "" RequiresRestart = $false)
+$global:Pprograms = (Name = "Prusa Software" Loc = "\\ucsarch\apps$\3DPrint\Prusa\PrusaSlicer-2.9.6-setup.exe" Para = "" RequiresRestart = $false)
 
+
+foreach($winapp in $applist) {
+
+}
+
+$global:Wprograms = @(
+    @{ID },
+
+)
 winget install --id Microsoft.Edge --scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
 winget install --id Google.Chrome --scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
 winget install --id Mozilla.Firefox --scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
@@ -103,6 +113,7 @@ class AppInstallation {
     # Checker
     [void]Checker() {
         $this.Logs("App Checker started for $($this.AppName)")
+        Write-Host "Checking for previous installations of $($this.AppName):"
         $prog64checker = [bool](Get-ChildItem -Path $env:ProgramFiles -Filter "*$($this.AppName)*" -Recurse -Directory -ErrorAction SilentlyContinue)
         $prog86checker = [bool](Get-ChildItem -Path ${env:ProgramFiles(x86)} -Filter "*$($this.AppName)*" -Recurse -Directory -ErrorAction SilentlyContinue)
         $progdatachecker = [bool](Get-ChildItem -Path $env:ProgramData -Filter "*$($this.AppName)*" -Recurse -Directory -ErrorAction SilentlyContinue)
@@ -124,21 +135,6 @@ class AppInstallation {
         else {
             $progdataPath = Join-Path $env:ProgramData $this.AppName
             Write-Host "Found existing data for $($this.AppName) in ProgramData:"
-          <#  
-            tree.com "$prodataPath" /F
-            $deleteAnswer = (Read-Host "Delete this directory? (y/n)").Trim()
-            $continueAnswer = (Read-Host "Continue with install? (y/n)").Trim()
-
-            if ($continueAnswer -notmatch '^(y|yes)$') {
-                $this.Logs("User declined to continue at the ProgramData prompt. Stopping.")
-                exit 1
-            }
-
-            if ($deleteAnswer -match '^(y|yes)$') {
-                $this.Logs("Deleting leftover directory: $prodataPath")
-                Remove-Item -Path $prodataPath -Recurse -Force -Verbose
-            }
-          #>
             $this.Installer($this.AppName, $this.InstallerPath, $this.InstallerArgs)
         }
     }
@@ -210,6 +206,84 @@ class AppInstallation {
     }
 }
 
+class WingetInstallation {
+    
+    [string]$AppName
+    [string]$InstallerArgs
+
+    # Constructor
+    WingetInstallation($AppName,$InstallerArgs) {
+        $this.AppName = $AppName
+        $this.InstallerArgs = $InstallerArgs
+    }
+
+    <#
+        .DOCUMENTATION This checker method will scan the machine using the 'winget' command to search to packages installed.  It will then compare the '--id' of the package to a given list and will do
+        one of three things.
+            1. It will find no package installed on the machine and install it from the winget repositories.
+            2. It will find the package installed and will update it to the lastest version.
+            3. It will find the package installed and it will see that it is to the latest version and move onto the next package in the list.
+    #>
+    #Winget Checker
+    [void]WingetChecker() {
+        $this.Logs("App Checker started for $($this.AppName)")
+        Write-Host "Checking for previous installations of $($this.AppName):"
+        $wingetchecker = [bool](winget list -q "$($this.AppName)" -s winget -e | Select-String -Pattern "$($this.AppName)" -Quiet)
+
+        if (-not $wingetchecker) {
+            Write-Host "Starting winget installation for $($this.AppName):"
+            $this.Logs("Winget installation for $($this.AppName) has started.")
+            $this.WingetInstaller($this.AppName, $this.InstallerArgs)
+        }
+        elseif ($wingetchecker) {
+            $this.ReturnResult('AlreadyInstalled')
+        }
+    }
+
+    # Winget Installer
+    [void]WingetInstaller([string]$id, [string]para) {
+        $this.Logs("Winget installer started for $id ($para)") #$id for the "--id" parameter of winget
+        Write-Host "Starting winget command for $id"
+
+        try {
+            winget install --id $id $para
+        }
+        catch {
+            $this.Logs("ERROR: Instatlling $id $($_.Execption.Message)")
+            throw
+        }
+    }
+}
+
+class WingetInstallQueue {
+    [System.Collections.Generic.List[WingetInstallation]]$Apps
+    [string]$ScriptPath
+
+    WingetInstallQueue([array]$appDefinitions) {
+        $this.ScriptPath = $ScriptPath
+        $this.Apps = [System.Collections.Generic.List[WingetInstallation]]::new()
+
+        foreach ($def in $appDefinitions) {
+            $app = [WingetInstallation]::new($def.Name, $def.Para)
+            $this.Apps.Add($app)
+        }
+    }
+
+    [void]Run() {
+        foreach ($app in $this.Apps)  {
+            Write-Host "=== Processing $($app.AppName) ==="
+            try {
+                $app.WingetChecker
+            }
+            catch {
+                Write-Host "Queue stopped - $($app.AppName) failed: $($_.Execption.Message)"
+                throw
+            }
+        }
+        Write-Host "All Winget apps installed successfully!"
+    }
+}
+
 <#
     .DOCUMENTATION AppInstallQueue relies on prior declaration of AppInstallation class.
 #>
@@ -219,11 +293,6 @@ class AppInstallQueue {
 
     # 300 = 5 minutes.
     [int]$RestartDelaySeconds = 20
-  <#
-    [string]$AutoLogonUser
-    [string]$AutoLogonPassword
-    [string]$AutoLogonDomain
-  #>  
     AppInstallQueue([array]$appDefinitions, [string]$ScriptPath) {
         $this.ScriptPath = $ScriptPath
         $this.Apps = [System.Collections.Generic.List[AppInstallation]]::new()
@@ -255,7 +324,8 @@ class AppInstallQueue {
             }
         }
         $this.RemoveResumeTask()
-        Write-Host "All apps in the queue completed successfully."
+        Write-Host "All apps in the queue completed successfully!"
+        pause
     }
 
     [void]ScheduleRestartAndResume() {
@@ -275,11 +345,24 @@ class AppInstallQueue {
 
 }
 
-$queue = [AppInstallQueue]::new($Nprograms, $PSCommandPath)
-$queue.Run()
-
 # Does the intial check to see if computer is added to STUDENTI domain
-<#[bool]$chkdomstat = (Get-WmiObject -Class Win32_ComputerSystem).PartOfDomain
-if ($chkdomstat -eq $true) {}
-else {}
-#>
+[bool]$chkdomstat = (Get-WmiObject -Class Win32_ComputerSystem).PartOfDomain
+if ($chkdomstat -eq $true) {
+    $queue1 = [WingetInstallQueue]::new($Wprograms, $PSCommandPath)
+    $queue2 = [AppInstallQueue]::new($Nprograms, $PSCommandPath)
+    $queue1.Run()
+    $queue2.Run()
+}
+else {
+    Write-Host "Please join a SLCC domain first before running this script."
+    throw
+}
+
+[string]CompName = (Get-WmiObject -Class Win32_ComputerSystem).Name
+$CompInt = "LTB305C01"
+$CompInt2 = "LTB305C02"
+[array]CompComp = 
+
+foreach() {
+
+}
