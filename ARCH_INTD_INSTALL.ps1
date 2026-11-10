@@ -304,12 +304,12 @@ class WingetInstallQueue {
 
     [void]Run() {
         foreach ($app in $this.Apps)  {
-            Write-Host "=== Processing $($app.AppName) ==="
+            Write-Host "=== Processing $($app.ID) ==="
             try {
                 $app.WingetChecker
             }
             catch {
-                Write-Host "Queue stopped - $($app.AppName) failed: $($_.Execption.Message)"
+                Write-Host "Queue stopped - $($app.ID) failed: $($_.Execption.Message)"
                 throw
             }
         }
