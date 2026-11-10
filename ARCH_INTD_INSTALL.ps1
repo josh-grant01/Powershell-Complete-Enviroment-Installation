@@ -227,7 +227,7 @@ class WingetInstallation {
             $this.Logs("Winget installation for $($this.AppId) has started.")
             $this.WingetInstaller($this.AppId, $this.IdArgs)
         }
-        else ($wingetchecker) {
+        else {
             $wingetUpdateChecker = [bool](winget list --id "$($this.AppId)" -s winget -e | Select-String '\bVersion\s+Available\b' -Quiet)
             if ($wingetUpdateChecker) {
                 try {
@@ -246,7 +246,7 @@ class WingetInstallation {
     }
 
     # Winget Installer
-    [void]WingetInstaller([string]$id, [string]para) {
+    [void]WingetInstaller([string]$id, [string]$para) {
         $this.Logs("Winget installer started for $id ($para)") #$id for the "--id" parameter of winget
         Write-Host "Starting winget command for $id"
 
@@ -259,7 +259,7 @@ class WingetInstallation {
         }
     }
 
-    # Logs
+    <## Logs
     [void]Logs([string]$message) {
         $logDir = Join-Path $env:ProgramData "Logs\$($this.AppId)"
         if (-not (Test-Path $logDir)) {
@@ -283,7 +283,7 @@ class WingetInstallation {
         }
         Write-Host $message
         $this.Logs($message)
-    }
+    }#>
 }
 
 class WingetInstallQueue {
@@ -390,8 +390,8 @@ else {
 }
 
 [string]CompName = (Get-WmiObject -Class Win32_ComputerSystem).Name
-$CompInt = "TB305C01"
-$CompInt2 = "TB305C02"
+[String]$CompInt = "TB305C01"
+[string]$CompInt2 = "TB305C02"
 [array]CompComp = $CompInt, $CompInt2
 
 foreach($comp in $CompComp) {
