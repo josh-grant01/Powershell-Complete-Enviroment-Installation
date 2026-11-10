@@ -46,54 +46,46 @@ $global:Nprograms = @(
 )
 $global:Pprograms = (Name = "Prusa Software" Loc = "\\ucsarch\apps$\3DPrint\Prusa\PrusaSlicer-2.9.6-setup.exe" Para = "" RequiresRestart = $false)
 
-
-foreach($winapp in $applist) {
-
-}
-
 $global:Wprograms = @(
-    @{ID },
-
+    @{ID = "Microsoft.Edge"; Para = "--scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Google.Chrome"; Para = "--scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Mozilla.Firefox"; Para = "--scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Microsoft.Onedrive"; Para = "--scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Notepad++.Notepad++"; Para = "--scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Zoom.Zoom"; Para = "--scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Zoom.ZoomOutlookPlugin"; Para = "--scope machine -s winget -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Zoom.ZoomSkypeForBusinessPlugin"; Para = "--scope machine -s winget -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Zoom.ZoomRemoteControl"; Para = "--scope machine -s winget -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Zoom.ZoomRooms"; Para = "--scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Microsoft.Teams"; Para = "--scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Google.EarthPro"; Para = "--scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "VideoLAN.VLC"; Para = "--scope machine -s winget -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Microsoft.DotNet.Framework.DeveloperPack_4"; Para = "--scope machine -s winget -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Microsoft.DotNet.Framework.Runtime"; Para = "--scope machine -s winget -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Microsoft.DotNet.AspNetCore.Preview"; Para = "--scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Microsoft.DotNet.AspNetCore.8"; Para = "--scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Microsoft.DotNet.AspNetCore.8"; Para = "--scope machine -s winget -a x86 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Microsoft.DotNet.AspNetCore.9"; Para = "--scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Microsoft.DotNet.AspNetCore.9"; Para = "--scope machine -s winget -a x86 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Microsoft.DotNet.AspNetCore.10"; Para = "--scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Microsoft.DotNet.AspNetCore.10"; Para = "--scope machine -s winget -a x86 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Microsoft.DotNet.DesktopRuntime.Preview"; Para = "--scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Microsoft.DotNet.DesktopRuntime.8"; Para = "--scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Microsoft.DotNet.DesktopRuntime.8"; Para = "--scope machine -s winget -a x86 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Microsoft.DotNet.DesktopRuntime.9"; Para = "--scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Microsoft.DotNet.DesktopRuntime.9"; Para = "--scope machine -s winget -a x86 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Microsoft.DotNet.DesktopRuntime.10"; Para = "--scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Microsoft.DotNet.DesktopRuntime.10"; Para = "--scope machine -s winget -a x86 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Microsoft.VCRedist.2010.x64"; Para = "--scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Microsoft.VCRedist.2010.x86"; Para = "--scope machine -s winget -a x86 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Microsoft.VCRedist.2012.x64"; Para = "--scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Microsoft.VCRedist.2012.x86"; Para = "--scope machine -s winget -a x86 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Microsoft.VCRedist.2013.x64"; Para = "--scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Microsoft.VCRedist.2013.x86"; Para = "--scope machine -s winget -a x86 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Microsoft.VCRedist.2015+.x64"; Para = "--scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "Microsoft.VCRedist.2015+.x86"; Para = "--scope machine -s winget -a x86 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
+    @{ID = "7zip.7zip"; Para = "--scope machine -s winget -a x86 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"}
 )
-winget install --id Microsoft.Edge --scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Google.Chrome --scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Mozilla.Firefox --scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Microsoft.Onedrive --scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Notepad++.Notepad++ --scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Zoom.Zoom --scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Zoom.ZoomOutlookPlugin --scope machine -s winget -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Zoom.ZoomSkypeForBusinessPlugin --scope machine -s winget -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Zoom.ZoomRemoteControl --scope machine -s winget -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Zoom.ZoomRooms --scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Microsoft.Teams --scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Google.EarthPro --scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id VideoLAN.VLC --scope machine -s winget -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Microsoft.DotNet.Framework.DeveloperPack_4 --scope machine -s winget -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Microsoft.DotNet.Framework.Runtime --scope machine -s winget -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Microsoft.DotNet.AspNetCore.Preview --scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Microsoft.DotNet.AspNetCore.8 --scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Microsoft.DotNet.AspNetCore.8 --scope machine -s winget -a x86 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Microsoft.DotNet.AspNetCore.9 --scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Microsoft.DotNet.AspNetCore.9 --scope machine -s winget -a x86 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Microsoft.DotNet.AspNetCore.10 --scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Microsoft.DotNet.AspNetCore.10 --scope machine -s winget -a x86 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Microsoft.DotNet.DesktopRuntime.Preview --scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Microsoft.DotNet.DesktopRuntime.8 --scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Microsoft.DotNet.DesktopRuntime.8 --scope machine -s winget -a x86 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Microsoft.DotNet.DesktopRuntime.9 --scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Microsoft.DotNet.DesktopRuntime.9 --scope machine -s winget -a x86 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Microsoft.DotNet.DesktopRuntime.10 --scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Microsoft.DotNet.DesktopRuntime.10 --scope machine -s winget -a x86 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Microsoft.VCRedist.2010.x64 --scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Microsoft.VCRedist.2010.x86 --scope machine -s winget -a x86 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Microsoft.VCRedist.2012.x64 --scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Microsoft.VCRedist.2012.x86 --scope machine -s winget -a x86 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Microsoft.VCRedist.2013.x64 --scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Microsoft.VCRedist.2013.x86 --scope machine -s winget -a x86 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Microsoft.VCRedist.2015+.x64 --scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id Microsoft.VCRedist.2015+.x86 --scope machine -s winget -a x86 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-winget install --id 7zip.7zip --scope machine -s winget -a x86 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity
-
 
 class AppInstallation {
 
@@ -269,7 +261,7 @@ class WingetInstallation {
 
     # Logs
     [void]Logs([string]$message) {
-        $logDir = Join-Path $env:ProgramData "Logs\$($this.AppName)"
+        $logDir = Join-Path $env:ProgramData "Logs\$($this.AppId)"
         if (-not (Test-Path $logDir)) {
             New-Item -Path $logDir -ItemType Directory -Force | Out-Null
         }
@@ -281,10 +273,10 @@ class WingetInstallation {
     # Return Result
     [void]ReturnResult([string]$status) {
         $message = switch ($status) {
-            'AlreadyInstalled' {"$($this.AppName) is already installed and verified."}
-            'InstallSuccess' {"$($this.AppName) was installed successfully."}
-            'InstallFailed' {"$($this.AppName) installation failed."}
-            default {"$($this.AppName): unrecognized status '$status'."}
+            'AlreadyInstalled' {"$($this.AppId) is already installed and verified."}
+            'InstallSuccess' {"$($this.AppId) was installed successfully."}
+            'InstallFailed' {"$($this.AppId) installation failed."}
+            default {"$($this.AppId): unrecognized status '$status'."}
         }
         if ($status -eq 'InstallSuccess') {
             $this.WasFreshInstall = $true
