@@ -231,7 +231,7 @@ class WingetInstallation {
             $wingetUpdateChecker = [bool](winget list --id "$($this.AppId)" -s winget -e | Select-String '\bVersion\s+Available\b' -Quiet)
             if ($wingetUpdateChecker) {
                 try {
-                    winget upgrade --id $AppId $IdArgs
+                    winget upgrade --id "$($this.AppId)" "$($this.IdArgs)"
                 }
                 catch {
                     $this.Logs("ERROR: Failed to update winget application.")
@@ -247,6 +247,8 @@ class WingetInstallation {
 
     # Winget Installer
     [void]WingetInstaller([string]$id, [string]$para) {
+        $id = $this.AppId
+        $para = $this.IdArgs
         $this.Logs("Winget installer started for $id ($para)") #$id for the "--id" parameter of winget
         Write-Host "Starting winget command for $id"
 
@@ -290,7 +292,7 @@ class WingetInstallQueue {
     [System.Collections.Generic.List[WingetInstallation]]$Apps
     [string]$ScriptPath
 
-    WingetInstallQueue([array]$appDefinitions) {
+    WingetInstallQueue([array]$appDefinitions, [string]$ScriptPath) {
         $this.ScriptPath = $ScriptPath
         $this.Apps = [System.Collections.Generic.List[WingetInstallation]]::new()
 
@@ -389,7 +391,7 @@ else {
     throw
 }
 
-[string]CompName = (Get-WmiObject -Class Win32_ComputerSystem).Name
+<#[string]CompName = (Get-WmiObject -Class Win32_ComputerSystem).Name
 [String]$CompInt = "TB305C01"
 [string]$CompInt2 = "TB305C02"
 [array]CompComp = $CompInt, $CompInt2
@@ -403,4 +405,4 @@ foreach($comp in $CompComp) {
     else {
         $this.Logs("Computer: $CompName does not require Prusa software")
     }
-}
+}#>
