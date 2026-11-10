@@ -297,7 +297,7 @@ class WingetInstallQueue {
         $this.Apps = [System.Collections.Generic.List[WingetInstallation]]::new()
 
         foreach ($def in $appDefinitions) {
-            $app = [WingetInstallation]::new($def.Name, $def.Para)
+            $app = [WingetInstallation]::new($def.ID, $def.Para)
             $this.Apps.Add($app)
         }
     }
