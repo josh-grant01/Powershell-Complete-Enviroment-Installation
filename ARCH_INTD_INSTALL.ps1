@@ -247,6 +247,8 @@ class WingetInstallation {
 
     # Winget Installer
     [void]WingetInstaller([string]$id, [string]$para) {
+        $id = $this.AppId
+        $para = $this.IdArgs
         $this.Logs("Winget installer started for $id ($para)") #$id for the "--id" parameter of winget
         Write-Host "Starting winget command for $id"
 
@@ -290,7 +292,7 @@ class WingetInstallQueue {
     [System.Collections.Generic.List[WingetInstallation]]$Apps
     [string]$ScriptPath
 
-    WingetInstallQueue([array]$appDefinitions) {
+    WingetInstallQueue([array]$appDefinitions, [string]$ScriptPath) {
         $this.ScriptPath = $ScriptPath
         $this.Apps = [System.Collections.Generic.List[WingetInstallation]]::new()
 
