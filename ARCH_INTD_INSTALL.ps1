@@ -208,13 +208,13 @@ class AppInstallation {
 
 class WingetInstallation {
     
-    [string]$AppName
-    [string]$InstallerArgs
+    [string]$AppId
+    [string]$IdArgs
 
     # Constructor
-    WingetInstallation($AppName,$InstallerArgs) {
-        $this.AppName = $AppName
-        $this.InstallerArgs = $InstallerArgs
+    WingetInstallation($AppId,$IdArgs) {
+        $this.AppId = $AppId
+        $this.IdArgs = $IdArgs
     }
 
     <#
@@ -226,17 +226,30 @@ class WingetInstallation {
     #>
     #Winget Checker
     [void]WingetChecker() {
-        $this.Logs("App Checker started for $($this.AppName)")
-        Write-Host "Checking for previous installations of $($this.AppName):"
-        $wingetchecker = [bool](winget list -q "$($this.AppName)" -s winget -e | Select-String -Pattern "$($this.AppName)" -Quiet)
+        $this.Logs("App Checker started for $($this.AppId)")
+        Write-Host "Checking for previous installations of $($this.AppId):"
+        $wingetchecker = [bool](winget list -q "$($this.AppId)" -s winget -e | Select-String -Pattern "$($this.AppId)" -Quiet)
 
         if (-not $wingetchecker) {
-            Write-Host "Starting winget installation for $($this.AppName):"
-            $this.Logs("Winget installation for $($this.AppName) has started.")
-            $this.WingetInstaller($this.AppName, $this.InstallerArgs)
+            Write-Host "Starting winget installation for $($this.AppId):"
+            $this.Logs("Winget installation for $($this.AppId) has started.")
+            $this.WingetInstaller($this.AppId, $this.IdArgs)
         }
-        elseif ($wingetchecker) {
-            $this.ReturnResult('AlreadyInstalled')
+        else ($wingetchecker) {
+            $wingetUpdateChecker = [bool](winget list --id "$($this.AppId)" -s winget -e | Select-String '\bVersion\s+Available\b' -Quiet)
+            if ($wingetUpdateChecker) {
+                try {
+                    winget upgrade --id $AppId $IdArgs
+                }
+                catch {
+                    $this.Logs("ERROR: Failed to update winget application.")
+                    $this.ReturnResult('InstallFailed')
+                }
+            }
+            else {
+                Write-Host "$($this.AppId) is already installed and updated."
+                $this.ReturnResult('AlreadyInstalled')
+            }
         }
     }
 
@@ -252,6 +265,32 @@ class WingetInstallation {
             $this.Logs("ERROR: Instatlling $id $($_.Execption.Message)")
             throw
         }
+    }
+
+    # Logs
+    [void]Logs([string]$message) {
+        $logDir = Join-Path $env:ProgramData "Logs\$($this.AppName)"
+        if (-not (Test-Path $logDir)) {
+            New-Item -Path $logDir -ItemType Directory -Force | Out-Null
+        }
+        $logFile = Join-Path $logDir "install.log"
+        $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+        "$timestamp - $message" | Out-File -FilePath $logFile -Append -Encoding utf8
+    }
+
+    # Return Result
+    [void]ReturnResult([string]$status) {
+        $message = switch ($status) {
+            'AlreadyInstalled' {"$($this.AppName) is already installed and verified."}
+            'InstallSuccess' {"$($this.AppName) was installed successfully."}
+            'InstallFailed' {"$($this.AppName) installation failed."}
+            default {"$($this.AppName): unrecognized status '$status'."}
+        }
+        if ($status -eq 'InstallSuccess') {
+            $this.WasFreshInstall = $true
+        }
+        Write-Host $message
+        $this.Logs($message)
     }
 }
 
@@ -359,10 +398,17 @@ else {
 }
 
 [string]CompName = (Get-WmiObject -Class Win32_ComputerSystem).Name
-$CompInt = "LTB305C01"
-$CompInt2 = "LTB305C02"
-[array]CompComp = 
+$CompInt = "TB305C01"
+$CompInt2 = "TB305C02"
+[array]CompComp = $CompInt, $CompInt2
 
-foreach() {
-
+foreach($comp in $CompComp) {
+    $index = $this.compName.IndexOf($comp)
+    if ($index -ge 0) {
+        $queue3 = [AppInstallQueue]::new($Pprograms, $PSCommandPath)
+        $queue3.Run()
+    }
+    else {
+        $this.Logs("Computer: $CompName does not require Prusa software")
+    }
 }
