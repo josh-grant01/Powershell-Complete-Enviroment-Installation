@@ -220,44 +220,23 @@ class WingetInstallation {
     [void]WingetChecker() {
         $this.Logs("App Checker started for $($this.AppId)")
         Write-Host "Checking for previous installations of $($this.AppId):"
-        $wingetchecker = [bool](winget list -q "$($this.AppId)" -s winget -e | Select-String -Pattern "$($this.AppId)" -Quiet)
 
-        if (-not $wingetchecker) {
-            Write-Host "Starting winget installation for $($this.AppId):"
-            $this.Logs("Winget installation for $($this.AppId) has started.")
-            $this.WingetInstaller($this.AppId, $this.IdArgs)
-        }
-        else {
-            $wingetUpdateChecker = [bool](winget list --id "$($this.AppId)" -s winget -e | Select-String '\bVersion\s+Available\b' -Quiet)
-            if ($wingetUpdateChecker) {
-                try {
-                    winget upgrade --id "$($this.AppId)" "$($this.IdArgs)"
+        Foreach ($app in $Wprograms) {
+            #check if the app is already installed
+            $listApp = winget list --exact -q $app.ID --accept-source-agreements
+            if (![String]::Join("", $listApp).Contains($app.ID)) {
+                Write-host "Installing:" $app.name
+                if ($app.interactive) {
+                    $mode = "--interactive"
                 }
-                catch {
-                    $this.Logs("ERROR: Failed to update winget application.")
-                    $this.ReturnResult('InstallFailed')
+                else {
+                    $mode = "--silent"
                 }
+                winget install -e --id $app.ID $app.Para
             }
             else {
-                Write-Host "$($this.AppId) is already installed and updated."
-                $this.ReturnResult('AlreadyInstalled')
+                Write-host "Skipping Install of " $app.ID " as it is already installed."
             }
-        }
-    }
-
-    # Winget Installer
-    [void]WingetInstaller([string]$id, [string]$para) {
-        $id = $this.AppId
-        $para = $this.IdArgs
-        $this.Logs("Winget installer started for $id ($para)") #$id for the "--id" parameter of winget
-        Write-Host "Starting winget command for $id"
-
-        try {
-            winget install --id $id $para
-        }
-        catch {
-            $this.Logs("ERROR: Instatlling $id $($_.Execption.Message)")
-            throw
         }
     }
 
