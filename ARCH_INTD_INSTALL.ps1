@@ -2,7 +2,7 @@
 
     Made by: Josh Grant
     Created on: 08/30/26
-    Modified on: 11/09/26
+    Modified on: 11/13/26
 
     Architecture x64
     OS: Windows 11 26H2
@@ -44,7 +44,7 @@ $global:Nprograms = @(
     #Lumion Plugin for Revit Latest Version
     @{Name = "Lumion Plugin for Revit 2027"; Loc = "\\ucsarch\apps`$\Lumion\Revit_LiveSync_Plugin_Installation.bat"; Para = ""; RequiresRestart = $false}
 )
-$global:Pprograms = (Name = "Prusa Software" Loc = "\\ucsarch\apps$\3DPrint\Prusa\PrusaSlicer-2.9.6-setup.exe" Para = "" RequiresRestart = $false)
+$global:Pprograms = {Name = "Prusa Software" Loc = "\\ucsarch\apps$\3DPrint\Prusa\PrusaSlicer-2.9.6-setup.exe" Para = "" RequiresRestart = $false}
 
 $global:Wprograms = @(
     @{ID = "Microsoft.Edge"; Para = "--scope machine -s winget -a x64 -h --accept-package-agreements --accept-source-agreements --force --verbose --disable-interactivity"},
@@ -165,7 +165,7 @@ class AppInstallation {
             $this.ReturnResult('InstallSuccess')
         }
         catch {
-            $this.Logs("ERROR installing $name : $($_.Execption.Message)")
+            $this.Logs("ERROR installing $name : $($_.Exception.Message)")
             $this.ReturnResult('InstallFailed')
             throw
         }
@@ -202,6 +202,8 @@ class WingetInstallation {
     
     [string]$AppId
     [string]$IdArgs
+    [bool]$RequiresRestart = $false
+    [bool]$WasFreshInstall = $false
 
     # Constructor
     WingetInstallation($AppId,$IdArgs) {
@@ -217,30 +219,43 @@ class WingetInstallation {
             3. It will find the package installed and it will see that it is to the latest version and move onto the next package in the list.
     #>
     #Winget Checker
-    [void]WingetChecker() {
+    [void]WingetChecker([string]$AppId, [string]$IdArgs) {
         $this.Logs("App Checker started for $($this.AppId)")
         Write-Host "Checking for previous installations of $($this.AppId):"
 
-        Foreach ($app in $Wprograms) {
+        Foreach ($app in $AppId) {
             #check if the app is already installed
-            $listApp = winget list --exact -q $app.ID --accept-source-agreements
-            if (![String]::Join("", $listApp).Contains($app.ID)) {
-                Write-host "Installing:" $app.name
-                if ($app.interactive) {
-                    $mode = "--interactive"
-                }
-                else {
-                    $mode = "--silent"
-                }
-                winget install -e --id $app.ID $app.Para
+            winget list --exact -q $app -s winget --accept-source-agreements | Out-Null
+            $listCode = $LASTEXITCODE
+            $this.Logs("winget list --exact -q $app -s winget --accept-source-agreements")
+            $this.Logs("winget list exit code for $app = $listCode")
+
+            if ($listCode -ne 0) {
+                Write-host "Installing:" $this.AppId
+                $this.Logs("App: $app is not installed. Installing now.")
+
+                $wingetArgs = @('install', '-e', '--id', $app) +
+                    ($IdArgs -split '\s+' | Where-Object {$_})
+
+                $this.Logs("Winget $($wingetArgs -join '')")
+
+                & winget @wingetArgs | Out-Host
+                $this.Logs("Winget install exit code = $LASTEXITCODE")
+
+                Write-Host ""
+                Write-Host ""
             }
             else {
-                Write-host "Skipping Install of " $app.ID " as it is already installed."
+                Write-host "Skipping Install of $app as it is already installed."
+                $this.Logs("App: $app is already installed and updated.")
+
+                Write-Host ""
+                Write-Host ""
             }
         }
     }
 
-    <## Logs
+    # Logs
     [void]Logs([string]$message) {
         $logDir = Join-Path $env:ProgramData "Logs\$($this.AppId)"
         if (-not (Test-Path $logDir)) {
@@ -264,7 +279,7 @@ class WingetInstallation {
         }
         Write-Host $message
         $this.Logs($message)
-    }#>
+    }
 }
 
 class WingetInstallQueue {
@@ -272,6 +287,7 @@ class WingetInstallQueue {
     [string]$ScriptPath
 
     WingetInstallQueue([array]$appDefinitions, [string]$ScriptPath) {
+        Write-Host "Going to WingetInstallQueue Method"
         $this.ScriptPath = $ScriptPath
         $this.Apps = [System.Collections.Generic.List[WingetInstallation]]::new()
 
@@ -283,12 +299,13 @@ class WingetInstallQueue {
 
     [void]Run() {
         foreach ($app in $this.Apps)  {
-            Write-Host "=== Processing $($app.ID) ==="
+            Write-Host "=== Processing $($app.AppId) ==="
             try {
-                $app.WingetChecker
+                Write-Host "In Run Method calling WingetChecker"
+                $app.WingetChecker($app.AppId, $app.IdArgs)
             }
             catch {
-                Write-Host "Queue stopped - $($app.ID) failed: $($_.Execption.Message)"
+                Write-Host "Queue stopped - $($app.AppId) failed: $($_.Exception.Message)"
                 throw
             }
         }
@@ -325,7 +342,7 @@ class AppInstallQueue {
                 $app.Checker()
             }
             catch {
-                Write-Host "Queue stopped - $($app.AppName) failed: $($_.Execption.Message)"
+                Write-Host "Queue stopped - $($app.AppName) failed: $($_.Exception.Message)"
                 $this.RemoveResumeTask()
                 throw
             }
@@ -359,16 +376,17 @@ class AppInstallQueue {
 
 # Does the intial check to see if computer is added to STUDENTI domain
 [bool]$chkdomstat = (Get-WmiObject -Class Win32_ComputerSystem).PartOfDomain
-if ($chkdomstat -eq $true) {
+#if ($chkdomstat -eq $true) {
+    Write-Host "Going to WingetInstallQueue Class"
     $queue1 = [WingetInstallQueue]::new($Wprograms, $PSCommandPath)
     $queue2 = [AppInstallQueue]::new($Nprograms, $PSCommandPath)
     $queue1.Run()
     $queue2.Run()
-}
-else {
+#}
+#else {
     Write-Host "Please join a SLCC domain first before running this script."
     throw
-}
+#}
 
 <#[string]CompName = (Get-WmiObject -Class Win32_ComputerSystem).Name
 [String]$CompInt = "TB305C01"
