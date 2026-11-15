@@ -146,6 +146,16 @@ class AppInstallation {
                 $this.Logs("Running Nvidia App installer with elevated privileges.")
                 $process = Start-Process -FilePath $loc -ArgumentList $para -Wait -PassThru -ErrorAction Stop
             }
+            elseif ($name -eq "Revit") {
+                $this.Logs("Running Autodesk installer with elevated privileges and no wait command.")
+                $process = Start-Process -FilePath $loc -ArgumentList $para -PassThru
+                $null = $process.Handle
+                if (-not $process.WaitForExit(3600)) {
+                    $this.Logs("ERROR: Autodesk installer timed out. Please try again.")
+                    $this.ReturnResult('InstallFailed')
+                    throw "Autodesk install timed out"
+                }
+            }
             else {
                 $this.Logs("Running installer for $name.")
                 $process = Start-Process -FilePath $loc -ArgumentList $para -WorkingDirectory (Split-Path -Path $loc -Parent) -Wait -PassThru -ErrorAction Stop
@@ -246,11 +256,30 @@ class WingetInstallation {
                 Write-Host ""
             }
             else {
-                Write-host "Skipping Install of $app as it is already installed."
-                $this.Logs("App: $app is already installed and updated.")
+                Write-Host "$app is already installed. Checking for updates..."
+                $this.Logs("App: $app is already installed. Checking for updates.")
 
                 Write-Host ""
                 Write-Host ""
+
+                winget list -e --id $app --upgrade-available -s winget --accept-source-agreements | Out-Null
+                $upgradeCheck = $LASTEXITCODE
+                $this.Logs("Winget upgrade-available check exit code for $app = $upgradeCheck")
+
+                if ($upgradeCheck -eq 0) {
+                    Write-Host "Update available for $app.  Upgrading..."
+                    $this.Logs("Update availabe for $app. Upgrading now.")
+                    $upgradeArgs = @('upgrade', '-e', '--id', $app) +
+                        ($IdArgs -split '\s+' | Where-Object { $_ })
+                    $this.Logs("Winget $($upgradeArgs -join ' ')")
+
+                    & winget @upgradeArgs | Out-Host
+                    $this.Logs("Winget upgrade exit code = $LASTEXITCODE")
+                }
+                else {
+                    Write-Host "$app is already up to date."
+                    $this.Logs("App: $app is up to date.")
+                }
             }
         }
     }
